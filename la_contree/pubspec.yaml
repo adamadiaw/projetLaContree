@@ -17,6 +17,8 @@ dependencies:
   sqlite3: ^2.9.4
   sqlite3_flutter_libs: ^0.5.42
   path: ^1.9.1
+  intl: ^0.20.2
+  image_picker: ^1.2.1
 
 dev_dependencies:
   flutter_test:
@@ -27,3 +29,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/translations/
+    - assets/images/

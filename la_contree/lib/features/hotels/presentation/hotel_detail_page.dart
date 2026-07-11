@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../../../data/database/database.dart';
 
 class HotelDetailPage extends StatefulWidget {
@@ -65,6 +66,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       date: dateFormat.format(_selectedDate!),
     );
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -81,6 +83,8 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = widget.hotel['imageUrl'] ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.hotel['name']),
@@ -91,23 +95,17 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                Icons.hotel,
-                color: AppColors.primary,
-                size: 60,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: ImageHelper.buildImage(
+                imageUrl,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 20),
 
-            // Titre et Note
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -127,7 +125,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: AppColors.accent.withOpacity(0.2),
+                    color: AppColors.accent.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Row(
@@ -153,7 +151,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
             const SizedBox(height: 8),
 
-            // Prix
             Row(
               children: [
                 Icon(
@@ -176,7 +173,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             const Divider(),
             const SizedBox(height: 12),
 
-            // Description
             Text(
               'Description',
               style: const TextStyle(
@@ -196,7 +192,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
             const SizedBox(height: 30),
 
-            // Sélection de date
             Text(
               'Sélectionnez une date',
               style: const TextStyle(
@@ -212,7 +207,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -247,7 +242,6 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
             ),
             const SizedBox(height: 16),
 
-            // Bouton Réserver
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

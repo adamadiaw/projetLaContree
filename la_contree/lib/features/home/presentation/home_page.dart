@@ -13,20 +13,46 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final AppDatabase db = AppDatabase();
-  List<Map<String, dynamic>> activities = [];
+  List<Map<String, dynamic>> allActivities = [];
+  List<Map<String, dynamic>> filteredActivities = [];
   bool isLoading = true;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadActivities();
+    searchController.addListener(_filterActivities);
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_filterActivities);
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadActivities() async {
     final data = await db.getActivities();
     setState(() {
-      activities = data;
+      allActivities = data;
+      filteredActivities = data;
       isLoading = false;
+    });
+  }
+
+  void _filterActivities() {
+    final query = searchController.text.toLowerCase().trim();
+    setState(() {
+      if (query.isEmpty) {
+        filteredActivities = allActivities;
+      } else {
+        filteredActivities = allActivities.where((activity) {
+          final title = activity['title'].toString().toLowerCase();
+          final description = activity['description'].toString().toLowerCase();
+          return title.contains(query) || description.contains(query);
+        }).toList();
+      }
     });
   }
 
@@ -58,8 +84,25 @@ class _HomePageState extends State<HomePage> {
                 color: AppColors.textSecondary,
               ),
             ),
-            const SizedBox(height: 30),
-            
+            const SizedBox(height: 16),
+
+            // Barre de recherche
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Rechercher une activité...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: AppColors.surface,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+            const SizedBox(height: 16),
+
             Text(
               'Choses à faire',
               style: const TextStyle(
@@ -69,22 +112,51 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             const SizedBox(height: 16),
-            
+
             Expanded(
               child: isLoading
                   ? const Center(child: CircularProgressIndicator())
-                  : ListView.builder(
-                      itemCount: activities.length,
-                      itemBuilder: (context, index) {
-                        final activity = activities[index];
-                        return Padding(
-                          padding: const EdgeInsets.only(bottom: 12),
-                          child: ActivityCard(
-                            activity: activity,
+                  : filteredActivities.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Aucun résultat',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Essayez un autre mot-clé',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                    ),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredActivities.length,
+                          itemBuilder: (context, index) {
+                            final activity = filteredActivities[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: ActivityCard(
+                                activity: activity,
+                              ),
+                            );
+                          },
+                        ),
             ),
           ],
         ),

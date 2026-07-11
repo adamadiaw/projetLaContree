@@ -12,20 +12,46 @@ class HotelsPage extends StatefulWidget {
 
 class _HotelsPageState extends State<HotelsPage> {
   final AppDatabase db = AppDatabase();
-  List<Map<String, dynamic>> hotels = [];
+  List<Map<String, dynamic>> allHotels = [];
+  List<Map<String, dynamic>> filteredHotels = [];
   bool isLoading = true;
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _loadHotels();
+    searchController.addListener(_filterHotels);
+  }
+
+  @override
+  void dispose() {
+    searchController.removeListener(_filterHotels);
+    searchController.dispose();
+    super.dispose();
   }
 
   Future<void> _loadHotels() async {
     final data = await db.getHotels();
     setState(() {
-      hotels = data;
+      allHotels = data;
+      filteredHotels = data;
       isLoading = false;
+    });
+  }
+
+  void _filterHotels() {
+    final query = searchController.text.toLowerCase().trim();
+    setState(() {
+      if (query.isEmpty) {
+        filteredHotels = allHotels;
+      } else {
+        filteredHotels = allHotels.where((hotel) {
+          final name = hotel['name'].toString().toLowerCase();
+          final description = hotel['description'].toString().toLowerCase();
+          return name.contains(query) || description.contains(query);
+        }).toList();
+      }
     });
   }
 
@@ -38,25 +64,70 @@ class _HotelsPageState extends State<HotelsPage> {
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : hotels.isEmpty
-                ? const Center(
-                    child: Text(
-                      'Aucun hôtel disponible',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  )
-                : ListView.builder(
-                    itemCount: hotels.length,
-                    itemBuilder: (context, index) {
-                      final hotel = hotels[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: HotelCard(hotel: hotel),
-                      );
-                    },
-                  ),
+        child: Column(
+          children: [
+            // Barre de recherche
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: 'Rechercher un hôtel...',
+                prefixIcon: const Icon(Icons.search),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: AppColors.surface,
+                contentPadding: const EdgeInsets.symmetric(vertical: 12),
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            Expanded(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : filteredHotels.isEmpty
+                      ? Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.search_off,
+                                size: 64,
+                                color: AppColors.textSecondary,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(
+                                'Aucun hôtel trouvé',
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'Essayez un autre mot-clé',
+                                style: TextStyle(
+                                  fontSize: 14,
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ],
+                          ),
+                        )
+                      : ListView.builder(
+                          itemCount: filteredHotels.length,
+                          itemBuilder: (context, index) {
+                            final hotel = filteredHotels[index];
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: HotelCard(hotel: hotel),
+                            );
+                          },
+                        ),
+            ),
+          ],
+        ),
       ),
     );
   }

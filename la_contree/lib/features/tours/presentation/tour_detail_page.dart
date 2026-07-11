@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../../../data/database/database.dart';
 
 class TourDetailPage extends StatefulWidget {
@@ -65,6 +66,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
       date: dateFormat.format(_selectedDate!),
     );
 
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
@@ -81,6 +83,8 @@ class _TourDetailPageState extends State<TourDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = widget.tour['imageUrl'] ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.tour['title']),
@@ -91,23 +95,17 @@ class _TourDetailPageState extends State<TourDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Image
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Icon(
-                Icons.tour,
-                color: AppColors.primary,
-                size: 60,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: ImageHelper.buildImage(
+                imageUrl,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 20),
 
-            // Titre
             Text(
               widget.tour['title'],
               style: const TextStyle(
@@ -118,14 +116,13 @@ class _TourDetailPageState extends State<TourDetailPage> {
             ),
             const SizedBox(height: 16),
 
-            // Infos Guide et Durée
             Row(
               children: [
                 Expanded(
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -167,7 +164,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
                   child: Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: AppColors.primary.withOpacity(0.1),
+                      color: AppColors.primary.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Row(
@@ -209,14 +206,13 @@ class _TourDetailPageState extends State<TourDetailPage> {
 
             const SizedBox(height: 20),
 
-            // Prix
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.05),
+                color: AppColors.primary.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -256,7 +252,6 @@ class _TourDetailPageState extends State<TourDetailPage> {
             const Divider(),
             const SizedBox(height: 12),
 
-            // Description
             Text(
               'Description',
               style: const TextStyle(
@@ -266,6 +261,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
               ),
             ),
             const SizedBox(height: 8),
+
             Text(
               widget.tour['description'],
               style: TextStyle(
@@ -277,7 +273,6 @@ class _TourDetailPageState extends State<TourDetailPage> {
 
             const SizedBox(height: 30),
 
-            // Sélection de date
             Text(
               'Sélectionnez une date',
               style: const TextStyle(
@@ -293,7 +288,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
                 color: AppColors.background,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: AppColors.primary.withOpacity(0.2),
+                  color: AppColors.primary.withValues(alpha: 0.2),
                 ),
               ),
               child: Row(
@@ -328,7 +323,6 @@ class _TourDetailPageState extends State<TourDetailPage> {
             ),
             const SizedBox(height: 16),
 
-            // Bouton Réserver
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(

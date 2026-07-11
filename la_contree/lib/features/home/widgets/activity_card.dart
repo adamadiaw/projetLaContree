@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../../../data/database/database.dart';
 import '../../activity/presentation/activity_detail_page.dart';
 
 class ActivityCard extends StatefulWidget {
   final Map<String, dynamic> activity;
+  final bool isInFavoritesPage;
+  final VoidCallback? onFavoriteRemoved;
 
   const ActivityCard({
     super.key,
     required this.activity,
+    this.isInFavoritesPage = false,
+    this.onFavoriteRemoved,
   });
 
   @override
@@ -31,10 +36,16 @@ class _ActivityCardState extends State<ActivityCard> {
     setState(() {
       isFavorite = newValue;
     });
+
+    if (widget.isInFavoritesPage && !newValue && widget.onFavoriteRemoved != null) {
+      widget.onFavoriteRemoved!();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = widget.activity['imageUrl'] ?? '';
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -52,17 +63,13 @@ class _ActivityCardState extends State<ActivityCard> {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(
-                  Icons.photo,
-                  color: AppColors.primary,
-                  size: 40,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ImageHelper.buildImage(
+                  imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(width: 16),

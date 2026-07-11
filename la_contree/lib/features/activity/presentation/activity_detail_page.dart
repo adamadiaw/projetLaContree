@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../../../data/database/database.dart';
 
 class ActivityDetailPage extends StatefulWidget {
@@ -34,6 +35,8 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = widget.activity['imageUrl'] ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.activity['title']),
@@ -53,21 +56,17 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              width: double.infinity,
-              height: 200,
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: const Icon(
-                Icons.photo,
-                color: AppColors.primary,
-                size: 60,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(16),
+              child: ImageHelper.buildImage(
+                imageUrl,
+                width: double.infinity,
+                height: 200,
+                fit: BoxFit.cover,
               ),
             ),
             const SizedBox(height: 20),
-            
+
             Text(
               widget.activity['title'],
               style: const TextStyle(
@@ -77,7 +76,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
               ),
             ),
             const SizedBox(height: 12),
-            
+
             Text(
               widget.activity['description'],
               style: TextStyle(

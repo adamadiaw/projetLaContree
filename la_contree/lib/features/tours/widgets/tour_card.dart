@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../presentation/tour_detail_page.dart';
 
 class TourCard extends StatelessWidget {
@@ -12,6 +13,8 @@ class TourCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final imageUrl = tour['imageUrl'] ?? '';
+
     return InkWell(
       onTap: () {
         Navigator.push(
@@ -21,23 +24,19 @@ class TourCard extends StatelessWidget {
           ),
         );
       },
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(16),
       child: Card(
         child: Padding(
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Container(
-                width: 80,
-                height: 80,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.2),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: const Icon(
-                  Icons.tour,
-                  color: AppColors.primary,
-                  size: 40,
+              ClipRRect(
+                borderRadius: BorderRadius.circular(12),
+                child: ImageHelper.buildImage(
+                  imageUrl,
+                  width: 80,
+                  height: 80,
+                  fit: BoxFit.cover,
                 ),
               ),
               const SizedBox(width: 16),
@@ -50,6 +49,7 @@ class TourCard extends StatelessWidget {
                       style: const TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
+                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
