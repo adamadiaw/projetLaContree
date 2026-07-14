@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/database/database.dart';
 import '../widgets/activity_card.dart';
+import '../../../main.dart'; // Import pour scaffoldKey
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -62,6 +63,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         title: const Text('La Contrée'),
         backgroundColor: AppColors.primary,
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            if (scaffoldKey.currentState?.isDrawerOpen == false) {
+              scaffoldKey.currentState?.openDrawer();
+            }
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -86,7 +95,6 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 16),
 
-            // Barre de recherche
             TextField(
               controller: searchController,
               decoration: InputDecoration(

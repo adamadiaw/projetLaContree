@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/database/database.dart';
 import '../widgets/hotel_card.dart';
+import '../../../main.dart'; // Import pour scaffoldKey
 
 class HotelsPage extends StatefulWidget {
   const HotelsPage({super.key});
@@ -61,12 +62,19 @@ class _HotelsPageState extends State<HotelsPage> {
       appBar: AppBar(
         title: const Text('Hôtels'),
         backgroundColor: AppColors.primary,
+        leading: IconButton(
+          icon: const Icon(Icons.menu),
+          onPressed: () {
+            if (scaffoldKey.currentState?.isDrawerOpen == false) {
+              scaffoldKey.currentState?.openDrawer();
+            }
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Barre de recherche
             TextField(
               controller: searchController,
               decoration: InputDecoration(

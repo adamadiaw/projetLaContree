@@ -1,13 +1,16 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'core/theme/app_theme.dart';
-import 'core/theme/app_colors.dart'; // ← Import pour les couleurs
+import 'core/theme/app_colors.dart';
 import 'features/home/presentation/home_page.dart';
 import 'features/hotels/presentation/hotels_page.dart';
 import 'features/tours/presentation/tours_page.dart';
+import 'features/bookings/presentation/bookings_page.dart';
 import 'features/favorites/presentation/favorites_page.dart';
 import 'features/profile/presentation/profile_page.dart';
-import 'features/bookings/presentation/bookings_page.dart';
+
+// ✅ Clé globale pour le Scaffold (exportée pour être utilisée ailleurs)
+final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -50,19 +53,30 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
+  final List<Widget> _mainPages = [
     const HomePage(),
     const HotelsPage(),
     const ToursPage(),
-    const BookingsPage(),
-    const FavoritesPage(),
-    const ProfilePage(),
   ];
+
+  void _navigateToPage(Widget page) {
+    if (scaffoldKey.currentState?.isDrawerOpen == true) {
+      scaffoldKey.currentState?.closeDrawer();
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => page),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex],
+      key: scaffoldKey,
+      drawer: AppDrawer(
+        onNavigate: _navigateToPage,
+      ),
+      body: _mainPages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: (index) {
@@ -94,19 +108,153 @@ class _MainNavigationState extends State<MainNavigation> {
             icon: Icon(Icons.tour),
             label: 'Visites',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event_note),
-            label: 'Réservations',
+        ],
+      ),
+    );
+  }
+}
+
+class AppDrawer extends StatelessWidget {
+  final Function(Widget) onNavigate;
+
+  const AppDrawer({
+    super.key,
+    required this.onNavigate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Drawer(
+      backgroundColor: AppColors.background,
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            decoration: BoxDecoration(
+              gradient: AppColors.primaryGradient,
+              borderRadius: const BorderRadius.only(
+                bottomLeft: Radius.circular(24),
+                bottomRight: Radius.circular(24),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const CircleAvatar(
+                  radius: 35,
+                  backgroundColor: Colors.white,
+                  child: Icon(
+                    Icons.explore,
+                    size: 40,
+                    color: AppColors.primary,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'La Contrée',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white,
+                  ),
+                ),
+                Text(
+                  'Votre guide au Sénégal',
+                  style: TextStyle(
+                    fontSize: 14,
+                    color: Colors.white.withValues(alpha: 0.8),
+                  ),
+                ),
+              ],
+            ),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: 'Favoris',
+          const SizedBox(height: 20),
+
+          _buildDrawerItem(
+            context,
+            icon: Icons.event_note,
+            title: 'Réservations',
+            subtitle: 'Voir mes réservations',
+            page: const BookingsPage(),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
+          _buildDrawerItem(
+            context,
+            icon: Icons.favorite,
+            title: 'Favoris',
+            subtitle: 'Mes coups de cœur',
+            page: const FavoritesPage(),
+          ),
+          _buildDrawerItem(
+            context,
+            icon: Icons.person,
+            title: 'Profil',
+            subtitle: 'Mon compte',
+            page: const ProfilePage(),
+          ),
+
+          const Spacer(),
+
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: Text(
+              'Version 1.0.0',
+              style: TextStyle(
+                fontSize: 12,
+                color: AppColors.textSecondary,
+              ),
+            ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildDrawerItem(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+    required Widget page,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      child: ListTile(
+        leading: Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppColors.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Icon(
+            icon,
+            color: AppColors.primary,
+            size: 24,
+          ),
+        ),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
+          ),
+        ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(
+            fontSize: 12,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: AppColors.textSecondary,
+        ),
+        onTap: () => onNavigate(page),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
       ),
     );
   }
