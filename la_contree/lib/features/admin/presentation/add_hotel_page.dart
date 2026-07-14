@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../../../data/database/database.dart';
 import '../widgets/image_picker_field.dart';
 
@@ -40,10 +41,8 @@ class _AddHotelPageState extends State<AddHotelPage> {
     final database = await db.database;
 
     String imageUrl = _imageUrlController.text.trim();
-    if (imageUrl.isEmpty ||
-        (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://'))) {
-      imageUrl =
-          'https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=300&fit=crop';
+    if (imageUrl.isEmpty) {
+      imageUrl = ImageHelper.defaultImageUrl;
     }
 
     await database.insert('hotels', {

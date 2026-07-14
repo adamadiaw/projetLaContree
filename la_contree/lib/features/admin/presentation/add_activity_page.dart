@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/utils/image_helper.dart';
 import '../../../data/database/database.dart';
 import '../widgets/image_picker_field.dart';
 
@@ -35,12 +36,9 @@ class _AddActivityPageState extends State<AddActivityPage> {
 
     final database = await db.database;
 
-    // Si l'image est une URL internet, on la garde, sinon on met une image par défaut
     String imageUrl = _imageUrlController.text.trim();
-    if (imageUrl.isEmpty ||
-        (!imageUrl.startsWith('http://') && !imageUrl.startsWith('https://'))) {
-      imageUrl =
-          'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=400&h=300&fit=crop';
+    if (imageUrl.isEmpty) {
+      imageUrl = ImageHelper.defaultImageUrl;
     }
 
     await database.insert('activities', {
