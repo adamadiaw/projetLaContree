@@ -6,6 +6,7 @@ import 'core/theme/app_colors.dart';
 import 'features/home/presentation/home_page.dart';
 import 'features/hotels/presentation/hotels_page.dart';
 import 'features/tours/presentation/tours_page.dart';
+import 'features/map/presentation/map_page.dart'; // ← NOUVEAU
 import 'features/bookings/presentation/bookings_page.dart';
 import 'features/favorites/presentation/favorites_page.dart';
 import 'features/profile/presentation/profile_page.dart';
@@ -99,6 +100,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const HomePage(),
     const HotelsPage(),
     const ToursPage(),
+    const MapPage(), // ← NOUVEAU 4ème onglet
   ];
 
   void _navigateToPage(Widget page) {
@@ -154,6 +156,10 @@ class _MainNavigationState extends State<MainNavigation> {
             icon: Icon(Icons.tour),
             label: 'Visites',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.map),
+            label: 'Carte',
+          ),
         ],
       ),
     );
@@ -180,7 +186,6 @@ class AppDrawer extends StatelessWidget {
       backgroundColor: theme.colorScheme.surface,
       child: Column(
         children: [
-          // En-tête avec logo et bouton thème
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
@@ -193,7 +198,6 @@ class AppDrawer extends StatelessWidget {
             ),
             child: Row(
               children: [
-                // Logo
                 Container(
                   padding: const EdgeInsets.all(4),
                   decoration: BoxDecoration(
@@ -223,12 +227,19 @@ class AppDrawer extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                // Texte
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      
+                      Text(
+                        'La Contrée',
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                          letterSpacing: 1.2,
+                        ),
+                      ),
                       Text(
                         'Votre guide au Sénégal',
                         style: TextStyle(
@@ -240,7 +251,6 @@ class AppDrawer extends StatelessWidget {
                     ],
                   ),
                 ),
-                // Bouton thème (icône cliquable)
                 GestureDetector(
                   onTap: onToggleTheme,
                   child: Container(
