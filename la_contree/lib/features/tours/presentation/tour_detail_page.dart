@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/image_helper.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../data/database/database.dart';
 
 class TourDetailPage extends StatefulWidget {
@@ -52,18 +53,37 @@ class _TourDetailPageState extends State<TourDetailPage> {
     }
 
     final dateFormat = DateFormat('yyyy-MM-dd');
+    final dateFormatted = dateFormat.format(_selectedDate!);
+    
     await db.addBooking(
       type: 'tour',
       itemId: widget.tour['id'],
       itemName: widget.tour['title'],
-      date: dateFormat.format(_selectedDate!),
+      date: dateFormatted,
+    );
+
+    // ✅ Notification de confirmation
+    final notificationService = NotificationService();
+    await notificationService.showNotification(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: '✅ Réservation confirmée',
+      body: '${widget.tour['title']} réservé pour le $dateFormatted',
+    );
+
+    // ✅ Planifier un rappel 1 jour avant
+    final reminderId = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 1;
+    await notificationService.scheduleReminder(
+      id: reminderId,
+      title: '🔔 Rappel de réservation',
+      body: 'Votre visite "${widget.tour['title']}" est demain !',
+      reservationDate: _selectedDate!,
     );
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '✅ ${widget.tour['title']} réservé pour le ${dateFormat.format(_selectedDate!)}',
+          '✅ ${widget.tour['title']} réservé pour le $dateFormatted',
         ),
         backgroundColor: AppColors.success,
       ),

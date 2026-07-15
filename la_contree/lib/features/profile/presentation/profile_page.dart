@@ -1,6 +1,7 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../data/database/database.dart';
 import '../../admin/presentation/admin_login_page.dart';
 import '../../admin/presentation/admin_panel.dart';
@@ -174,6 +175,28 @@ class _ProfilePageState extends State<ProfilePage> {
                       onTap: () => _handleAdminAccess(context),
                     ),
                     const Divider(height: 1),
+
+                    // ✅ NOUVEAU : Tester les notifications
+                    ListTile(
+                      leading: Icon(
+                        Icons.notifications_active,
+                        color: AppColors.primary,
+                      ),
+                      title: Text(
+                        'Tester les notifications',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
+                      onTap: () => _testNotification(context),
+                    ),
+                    const Divider(height: 1),
+
                     ListTile(
                       leading: Icon(
                         Icons.language,
@@ -245,6 +268,36 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
       ),
     );
+  }
+
+  // ✅ Tester les notifications
+  void _testNotification(BuildContext context) async {
+    final notificationService = NotificationService();
+
+    // Notification immédiate
+    await notificationService.showNotification(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: '🔔 Test de notification',
+      body: 'Les notifications fonctionnent ! ✅',
+    );
+
+    // Notification planifiée (dans 10 secondes)
+    final scheduledId = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 1;
+    await notificationService.scheduleNotification(
+      id: scheduledId,
+      title: '⏰ Notification planifiée',
+      body: 'Cette notification est arrivée 10 secondes après le test !',
+      scheduledDate: DateTime.now().add(const Duration(seconds: 10)),
+    );
+
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('✅ Notifications envoyées ! Vérifiez votre barre de notifications'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
   }
 
   Widget _buildStatCard(

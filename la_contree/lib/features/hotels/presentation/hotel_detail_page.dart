@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/image_helper.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../data/database/database.dart';
 
 class HotelDetailPage extends StatefulWidget {
@@ -52,18 +53,37 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
     }
 
     final dateFormat = DateFormat('yyyy-MM-dd');
+    final dateFormatted = dateFormat.format(_selectedDate!);
+    
     await db.addBooking(
       type: 'hotel',
       itemId: widget.hotel['id'],
       itemName: widget.hotel['name'],
-      date: dateFormat.format(_selectedDate!),
+      date: dateFormatted,
+    );
+
+    // ✅ Notification de confirmation
+    final notificationService = NotificationService();
+    await notificationService.showNotification(
+      id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      title: '✅ Réservation confirmée',
+      body: '${widget.hotel['name']} réservé pour le $dateFormatted',
+    );
+
+    // ✅ Planifier un rappel 1 jour avant
+    final reminderId = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 1;
+    await notificationService.scheduleReminder(
+      id: reminderId,
+      title: '🔔 Rappel de réservation',
+      body: 'Votre réservation à ${widget.hotel['name']} est demain !',
+      reservationDate: _selectedDate!,
     );
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '✅ ${widget.hotel['name']} réservé pour le ${dateFormat.format(_selectedDate!)}',
+          '✅ ${widget.hotel['name']} réservé pour le $dateFormatted',
         ),
         backgroundColor: AppColors.success,
       ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/services/notification_service.dart';
 import '../../../data/database/database.dart';
 import '../widgets/booking_card.dart';
 
@@ -39,7 +40,6 @@ class _BookingsPageState extends State<BookingsPage> {
   }
 
   Future<void> _cancelBooking(int id, String name) async {
-    // ✅ Demander confirmation avant d'annuler
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -67,13 +67,12 @@ class _BookingsPageState extends State<BookingsPage> {
     );
 
     if (confirm == true) {
-      // ✅ Annuler la réservation (supprimer de la base)
+      await NotificationService().cancelNotification(id);
+      await NotificationService().cancelNotification(id + 1);
+
       await db.cancelBooking(id);
-      
-      // ✅ Recharger la liste
       await _loadBookings();
-      
-      // ✅ Message de confirmation
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -147,8 +146,6 @@ class _BookingsPageState extends State<BookingsPage> {
                               booking['itemName'],
                             ),
                             onTap: () {
-                              // ✅ On pourra ajouter le détail plus tard
-                              // Pour l'instant, on affiche juste les infos
                               _showBookingDetail(context, booking);
                             },
                           ),
@@ -160,8 +157,9 @@ class _BookingsPageState extends State<BookingsPage> {
     );
   }
 
-  // ✅ Afficher le détail d'une réservation
   void _showBookingDetail(BuildContext context, Map<String, dynamic> booking) {
+    final theme = Theme.of(context);
+
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -186,10 +184,8 @@ class _BookingsPageState extends State<BookingsPage> {
                 Expanded(
                   child: Text(
                     booking['itemName'],
-                    style: const TextStyle(
-                      fontSize: 20,
+                    style: theme.textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -235,29 +231,28 @@ class _BookingsPageState extends State<BookingsPage> {
     );
   }
 
+  // ✅ Méthode ajoutée pour afficher chaque ligne d'information
   Widget _buildInfoRow({
     required IconData icon,
     required String label,
     required String value,
     Color? valueColor,
   }) {
+    final theme = Theme.of(context);
+
     return Row(
       children: [
         Icon(icon, size: 18, color: AppColors.primary),
         const SizedBox(width: 12),
         Text(
           '$label : ',
-          style: TextStyle(
-            fontSize: 14,
-            color: AppColors.textSecondary,
-          ),
+          style: theme.textTheme.bodyMedium,
         ),
         Text(
           value,
-          style: TextStyle(
-            fontSize: 14,
+          style: theme.textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
-            color: valueColor ?? AppColors.textPrimary,
+            color: valueColor ?? theme.colorScheme.onSurface,
           ),
         ),
       ],

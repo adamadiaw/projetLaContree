@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
+import 'core/services/notification_service.dart';
 import 'features/home/presentation/home_page.dart';
 import 'features/hotels/presentation/hotels_page.dart';
 import 'features/tours/presentation/tours_page.dart';
-import 'features/map/presentation/map_page.dart'; // ← NOUVEAU
+import 'features/map/presentation/map_page.dart';
 import 'features/bookings/presentation/bookings_page.dart';
 import 'features/favorites/presentation/favorites_page.dart';
 import 'features/profile/presentation/profile_page.dart';
@@ -16,6 +17,9 @@ final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
+
+  // Initialiser les notifications
+  await NotificationService().init();
 
   runApp(
     EasyLocalization(
@@ -100,7 +104,7 @@ class _MainNavigationState extends State<MainNavigation> {
     const HomePage(),
     const HotelsPage(),
     const ToursPage(),
-    const MapPage(), // ← NOUVEAU 4ème onglet
+    const MapPage(),
   ];
 
   void _navigateToPage(Widget page) {
