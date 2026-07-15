@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/database/database.dart';
 import '../widgets/tour_card.dart';
-import '../../../main.dart'; // Import pour scaffoldKey
+import '../../../main.dart';
 
 class ToursPage extends StatefulWidget {
   const ToursPage({super.key});
@@ -61,6 +61,8 @@ class _ToursPageState extends State<ToursPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Visites Guidées'),
@@ -80,15 +82,20 @@ class _ToursPageState extends State<ToursPage> {
           children: [
             TextField(
               controller: searchController,
+              style: theme.textTheme.bodyMedium,
               decoration: InputDecoration(
                 hintText: 'Rechercher une visite...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: theme.textTheme.bodySmall,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: theme.colorScheme.onSurface,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: AppColors.surface,
+                fillColor: theme.colorScheme.surface,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
@@ -105,23 +112,17 @@ class _ToursPageState extends State<ToursPage> {
                               Icon(
                                 Icons.search_off,
                                 size: 64,
-                                color: AppColors.textSecondary,
+                                color: theme.colorScheme.onSurface,
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'Aucune visite trouvée',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: theme.textTheme.titleMedium,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Essayez un autre mot-clé',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: theme.textTheme.bodyMedium,
                               ),
                             ],
                           ),

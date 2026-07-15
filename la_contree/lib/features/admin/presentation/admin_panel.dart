@@ -42,6 +42,8 @@ class _AdminPanelState extends State<AdminPanel> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Administration'),
@@ -68,6 +70,7 @@ class _AdminPanelState extends State<AdminPanel> {
                       children: [
                         Expanded(
                           child: _buildStatCard(
+                            context,
                             icon: Icons.landscape,
                             label: 'Activités',
                             value: activityCount.toString(),
@@ -77,6 +80,7 @@ class _AdminPanelState extends State<AdminPanel> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: _buildStatCard(
+                            context,
                             icon: Icons.hotel,
                             label: 'Hôtels',
                             value: hotelCount.toString(),
@@ -90,6 +94,7 @@ class _AdminPanelState extends State<AdminPanel> {
                       children: [
                         Expanded(
                           child: _buildStatCard(
+                            context,
                             icon: Icons.tour,
                             label: 'Visites',
                             value: tourCount.toString(),
@@ -99,6 +104,7 @@ class _AdminPanelState extends State<AdminPanel> {
                         const SizedBox(width: 8),
                         Expanded(
                           child: _buildStatCard(
+                            context,
                             icon: Icons.book_online,
                             label: 'Réservations',
                             value: bookingCount.toString(),
@@ -110,18 +116,16 @@ class _AdminPanelState extends State<AdminPanel> {
 
                     const SizedBox(height: 30),
 
-                    const Text(
+                    Text(
                       'Ajouter du contenu',
-                      style: TextStyle(
-                        fontSize: 18,
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 12),
 
-                    // Boutons Ajouter
                     _buildActionButton(
+                      context,
                       icon: Icons.landscape,
                       label: 'Ajouter une activité',
                       color: AppColors.primary,
@@ -138,6 +142,7 @@ class _AdminPanelState extends State<AdminPanel> {
                     const SizedBox(height: 8),
 
                     _buildActionButton(
+                      context,
                       icon: Icons.hotel,
                       label: 'Ajouter un hôtel',
                       color: AppColors.secondary,
@@ -154,6 +159,7 @@ class _AdminPanelState extends State<AdminPanel> {
                     const SizedBox(height: 8),
 
                     _buildActionButton(
+                      context,
                       icon: Icons.tour,
                       label: 'Ajouter une visite',
                       color: AppColors.accentDark,
@@ -170,7 +176,6 @@ class _AdminPanelState extends State<AdminPanel> {
 
                     const SizedBox(height: 30),
 
-                    // Déconnexion admin
                     SizedBox(
                       width: double.infinity,
                       child: OutlinedButton(
@@ -201,12 +206,15 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
-  Widget _buildStatCard({
+  Widget _buildStatCard(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
     required Color color,
   }) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -235,7 +243,7 @@ class _AdminPanelState extends State<AdminPanel> {
                 label,
                 style: TextStyle(
                   fontSize: 12,
-                  color: AppColors.textSecondary,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
               ),
             ],
@@ -245,7 +253,8 @@ class _AdminPanelState extends State<AdminPanel> {
     );
   }
 
-  Widget _buildActionButton({
+  Widget _buildActionButton(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required Color color,

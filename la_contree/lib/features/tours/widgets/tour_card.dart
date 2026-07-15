@@ -13,6 +13,7 @@ class TourCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final imageUrl = tour['imageUrl'] ?? '';
 
     return InkWell(
@@ -46,67 +47,72 @@ class TourCard extends StatelessWidget {
                   children: [
                     Text(
                       tour['title'],
-                      style: const TextStyle(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        const Icon(
+                        Icon(
                           Icons.person,
-                          color: AppColors.textSecondary,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           size: 14,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           'Guide: ${tour['guide']}',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: theme.textTheme.bodySmall,
                         ),
                         const SizedBox(width: 12),
-                        const Icon(
+                        Icon(
                           Icons.access_time,
-                          color: AppColors.textSecondary,
+                          color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
                           size: 14,
                         ),
                         const SizedBox(width: 4),
                         Text(
                           tour['duration'],
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.textSecondary,
-                          ),
+                          style: theme.textTheme.bodySmall,
                         ),
                       ],
                     ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.euro,
-                          color: AppColors.primary,
-                          size: 14,
-                        ),
-                        Text(
-                          '${tour['price']} € / personne',
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
+                    const SizedBox(height: 6),
+                    // ✅ Prix amélioré avec style
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.euro,
                             color: AppColors.primary,
+                            size: 16,
                           ),
-                        ),
-                      ],
+                          const SizedBox(width: 2),
+                          Text(
+                            '${tour['price']} € / personne',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w700,
+                              color: AppColors.primary,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 8),
+                    const SizedBox(height: 6),
                     Text(
                       'Voir Plus',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),

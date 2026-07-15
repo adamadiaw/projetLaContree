@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
-import 'admin_panel.dart'; // ← Ajout de l'import
+import 'admin_panel.dart';
 
 class AdminLoginPage extends StatefulWidget {
   const AdminLoginPage({super.key});
@@ -40,7 +40,6 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
     });
 
     if (password == ADMIN_PASSWORD) {
-      // ✅ Redirection directe vers l'admin panel
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -66,6 +65,8 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Accès Administrateur'),
@@ -96,32 +97,31 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
 
               Text(
                 'Mode Administrateur',
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
-                ),
+                style: theme.textTheme.titleLarge,
               ),
               const SizedBox(height: 8),
               Text(
                 'Entrez le mot de passe pour accéder\naux fonctionnalités d\'administration',
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  color: AppColors.textSecondary,
-                ),
+                style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(height: 32),
 
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
+                style: theme.textTheme.bodyMedium,
                 decoration: InputDecoration(
                   hintText: 'Mot de passe',
-                  prefixIcon: const Icon(Icons.lock),
+                  hintStyle: theme.textTheme.bodySmall,
+                  prefixIcon: Icon(
+                    Icons.lock,
+                    color: theme.colorScheme.onSurface,
+                  ),
                   suffixIcon: IconButton(
                     icon: Icon(
                       _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                      color: theme.colorScheme.onSurface,
                     ),
                     onPressed: () {
                       setState(() {
@@ -134,7 +134,7 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
                     borderSide: BorderSide.none,
                   ),
                   filled: true,
-                  fillColor: AppColors.surface,
+                  fillColor: theme.colorScheme.surface,
                   contentPadding: const EdgeInsets.symmetric(vertical: 16),
                 ),
                 onSubmitted: (_) => _login(),
@@ -174,14 +174,14 @@ class _AdminLoginPageState extends State<AdminLoginPage> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppColors.textSecondary.withValues(alpha: 0.1),
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   '🔑 Mot de passe par défaut : "admin123"',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                   ),
                 ),
               ),

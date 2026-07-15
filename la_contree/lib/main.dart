@@ -1,5 +1,6 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/app_colors.dart';
 import 'features/home/presentation/home_page.dart';
@@ -9,7 +10,6 @@ import 'features/bookings/presentation/bookings_page.dart';
 import 'features/favorites/presentation/favorites_page.dart';
 import 'features/profile/presentation/profile_page.dart';
 
-// ✅ Clé globale pour le Scaffold (exportée pour être utilisée ailleurs)
 final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 
 void main() async {
@@ -26,8 +26,38 @@ void main() async {
   );
 }
 
-class LaContreeApp extends StatelessWidget {
+class LaContreeApp extends StatefulWidget {
   const LaContreeApp({super.key});
+
+  @override
+  State<LaContreeApp> createState() => _LaContreeAppState();
+}
+
+class _LaContreeAppState extends State<LaContreeApp> {
+  ThemeMode _themeMode = ThemeMode.light;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadTheme();
+  }
+
+  Future<void> _loadTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final isDark = prefs.getBool('isDarkMode') ?? false;
+    setState(() {
+      _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    });
+  }
+
+  void toggleTheme() async {
+    final prefs = await SharedPreferences.getInstance();
+    final newIsDark = _themeMode == ThemeMode.light;
+    setState(() {
+      _themeMode = newIsDark ? ThemeMode.dark : ThemeMode.light;
+    });
+    await prefs.setBool('isDarkMode', newIsDark);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -37,14 +67,26 @@ class LaContreeApp extends StatelessWidget {
       locale: context.locale,
       title: 'La Contrée',
       theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: _themeMode,
       debugShowCheckedModeBanner: false,
-      home: const MainNavigation(),
+      home: MainNavigation(
+        onToggleTheme: toggleTheme,
+        isDarkMode: _themeMode == ThemeMode.dark,
+      ),
     );
   }
 }
 
 class MainNavigation extends StatefulWidget {
-  const MainNavigation({super.key});
+  final VoidCallback onToggleTheme;
+  final bool isDarkMode;
+
+  const MainNavigation({
+    super.key,
+    required this.onToggleTheme,
+    required this.isDarkMode,
+  });
 
   @override
   State<MainNavigation> createState() => _MainNavigationState();
@@ -71,10 +113,14 @@ class _MainNavigationState extends State<MainNavigation> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       key: scaffoldKey,
       drawer: AppDrawer(
         onNavigate: _navigateToPage,
+        onToggleTheme: widget.onToggleTheme,
+        isDarkMode: widget.isDarkMode,
       ),
       body: _mainPages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -85,9 +131,9 @@ class _MainNavigationState extends State<MainNavigation> {
           });
         },
         type: BottomNavigationBarType.fixed,
-        backgroundColor: AppColors.surface,
-        selectedItemColor: AppColors.primary,
-        unselectedItemColor: AppColors.textSecondary,
+        backgroundColor: theme.colorScheme.surface,
+        selectedItemColor: theme.colorScheme.primary,
+        unselectedItemColor: theme.colorScheme.onSurface,
         selectedLabelStyle: const TextStyle(
           fontWeight: FontWeight.w600,
           fontSize: 12,
@@ -116,93 +162,162 @@ class _MainNavigationState extends State<MainNavigation> {
 
 class AppDrawer extends StatelessWidget {
   final Function(Widget) onNavigate;
+  final VoidCallback onToggleTheme;
+  final bool isDarkMode;
 
   const AppDrawer({
     super.key,
     required this.onNavigate,
+    required this.onToggleTheme,
+    required this.isDarkMode,
   });
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Drawer(
-      backgroundColor: AppColors.background,
+      backgroundColor: theme.colorScheme.surface,
       child: Column(
         children: [
+          // En-tête avec logo et bouton thème
           Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 20),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 24),
             decoration: BoxDecoration(
               gradient: AppColors.primaryGradient,
               borderRadius: const BorderRadius.only(
-                bottomLeft: Radius.circular(24),
-                bottomRight: Radius.circular(24),
+                bottomLeft: Radius.circular(32),
+                bottomRight: Radius.circular(32),
               ),
             ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Row(
               children: [
-                const CircleAvatar(
-                  radius: 35,
-                  backgroundColor: Colors.white,
-                  child: Icon(
-                    Icons.explore,
-                    size: 40,
-                    color: AppColors.primary,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'La Contrée',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                // Logo
+                Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
                     color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(
+                      'assets/images/logos.png',
+                      width: 56,
+                      height: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 56,
+                          height: 56,
+                          color: Colors.white,
+                          child: const Icon(
+                            Icons.explore,
+                            size: 36,
+                            color: AppColors.primary,
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
-                Text(
-                  'Votre guide au Sénégal',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white.withValues(alpha: 0.8),
+                const SizedBox(width: 16),
+                // Texte
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      
+                      Text(
+                        'Votre guide au Sénégal',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white.withValues(alpha: 0.85),
+                          letterSpacing: 0.5,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Bouton thème (icône cliquable)
+                GestureDetector(
+                  onTap: onToggleTheme,
+                  child: Container(
+                    padding: const EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.2),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Icon(
+                      isDarkMode ? Icons.light_mode : Icons.dark_mode,
+                      color: Colors.white,
+                      size: 28,
+                    ),
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 16),
 
-          _buildDrawerItem(
-            context,
-            icon: Icons.event_note,
-            title: 'Réservations',
-            subtitle: 'Voir mes réservations',
-            page: const BookingsPage(),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.favorite,
-            title: 'Favoris',
-            subtitle: 'Mes coups de cœur',
-            page: const FavoritesPage(),
-          ),
-          _buildDrawerItem(
-            context,
-            icon: Icons.person,
-            title: 'Profil',
-            subtitle: 'Mon compte',
-            page: const ProfilePage(),
+          Expanded(
+            child: ListView(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              children: [
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.event_note,
+                  title: 'Réservations',
+                  subtitle: 'Voir mes réservations',
+                  page: const BookingsPage(),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.favorite,
+                  title: 'Favoris',
+                  subtitle: 'Mes coups de cœur',
+                  page: const FavoritesPage(),
+                ),
+                _buildDrawerItem(
+                  context,
+                  icon: Icons.person,
+                  title: 'Profil',
+                  subtitle: 'Mon compte',
+                  page: const ProfilePage(),
+                ),
+              ],
+            ),
           ),
 
-          const Spacer(),
-
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              'Version 1.0.0',
-              style: TextStyle(
-                fontSize: 12,
-                color: AppColors.textSecondary,
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            decoration: BoxDecoration(
+              border: Border(
+                top: BorderSide(
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.1),
+                ),
               ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text(
+                  'Version 1.0.0',
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                ),
+                Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppColors.success,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
             ),
           ),
         ],
@@ -217,39 +332,42 @@ class AppDrawer extends StatelessWidget {
     required String subtitle,
     required Widget page,
   }) {
+    final theme = Theme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: ListTile(
         leading: Container(
           padding: const EdgeInsets.all(8),
           decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(10),
+            color: AppColors.primary.withValues(alpha: 0.12),
+            borderRadius: BorderRadius.circular(12),
           ),
           child: Icon(
             icon,
             color: AppColors.primary,
-            size: 24,
+            size: 22,
           ),
         ),
         title: Text(
           title,
           style: TextStyle(
             fontWeight: FontWeight.w600,
-            color: AppColors.textPrimary,
+            fontSize: 15,
+            color: theme.colorScheme.onSurface,
           ),
         ),
         subtitle: Text(
           subtitle,
           style: TextStyle(
-            fontSize: 12,
-            color: AppColors.textSecondary,
+            fontSize: 13,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
           ),
         ),
         trailing: Icon(
           Icons.arrow_forward_ios,
-          size: 16,
-          color: AppColors.textSecondary,
+          size: 14,
+          color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
         ),
         onTap: () => onNavigate(page),
         shape: RoundedRectangleBorder(

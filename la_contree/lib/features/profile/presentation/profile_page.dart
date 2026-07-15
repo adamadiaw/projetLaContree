@@ -37,6 +37,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profil'),
@@ -65,10 +67,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 12),
                     Text(
                       isAdmin ? 'Administrateur' : 'Voyageur',
-                      style: TextStyle(
-                        fontSize: 22,
+                      style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
-                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -78,7 +78,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           : 'Explorez le Sénégal avec La Contrée',
                       style: TextStyle(
                         fontSize: 14,
-                        color: isAdmin ? AppColors.secondary : AppColors.textSecondary,
+                        color: isAdmin
+                            ? AppColors.secondary
+                            : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       ),
                     ),
                   ],
@@ -92,6 +94,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: Icons.favorite,
                       label: 'Favoris',
                       value: favoriteCount.toString(),
@@ -101,6 +104,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: _buildStatCard(
+                      context,
                       icon: Icons.book_online,
                       label: 'Réservations',
                       value: bookingCount.toString(),
@@ -113,12 +117,10 @@ class _ProfilePageState extends State<ProfilePage> {
               const SizedBox(height: 30),
 
               // Menu
-              const Text(
+              Text(
                 'Paramètres',
-                style: TextStyle(
-                  fontSize: 18,
+                style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
                 ),
               ),
               const SizedBox(height: 8),
@@ -135,7 +137,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       title: Text(
                         isAdmin ? 'Administration' : 'Mode Administrateur',
                         style: TextStyle(
-                          color: isAdmin ? AppColors.secondary : AppColors.textPrimary,
+                          color: isAdmin ? AppColors.secondary : theme.colorScheme.onSurface,
                           fontWeight: isAdmin ? FontWeight.w600 : FontWeight.normal,
                         ),
                       ),
@@ -162,7 +164,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               ),
                             ),
                           const SizedBox(width: 8),
-                          const Icon(Icons.arrow_forward_ios, size: 16),
+                          Icon(
+                            Icons.arrow_forward_ios,
+                            size: 16,
+                            color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                          ),
                         ],
                       ),
                       onTap: () => _handleAdminAccess(context),
@@ -173,8 +179,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.language,
                         color: AppColors.primary,
                       ),
-                      title: const Text('Changer la langue'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      title: Text(
+                        'Changer la langue',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
                       onTap: () => _showLanguageDialog(context),
                     ),
                     const Divider(height: 1),
@@ -183,8 +198,17 @@ class _ProfilePageState extends State<ProfilePage> {
                         Icons.info_outline,
                         color: AppColors.primary,
                       ),
-                      title: const Text('À propos'),
-                      trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+                      title: Text(
+                        'À propos',
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                      trailing: Icon(
+                        Icons.arrow_forward_ios,
+                        size: 16,
+                        color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      ),
                       onTap: () => _showAboutDialog(context),
                     ),
                     const Divider(height: 1),
@@ -207,13 +231,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
               const SizedBox(height: 20),
 
-              // Version
               Center(
                 child: Text(
                   'Version 1.0.0',
                   style: TextStyle(
                     fontSize: 12,
-                    color: AppColors.textSecondary,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                 ),
               ),
@@ -224,44 +247,15 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  void _handleAdminAccess(BuildContext context) {
-    if (isAdmin) {
-      // Si déjà admin, on va au panneau d'administration
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const AdminPanel(),
-        ),
-      );
-    } else {
-      // Sinon, on demande le mot de passe
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const AdminLoginPage(),
-        ),
-      ).then((result) {
-        if (result == true) {
-          setState(() {
-            isAdmin = true;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('✅ Mode Administrateur activé'),
-              backgroundColor: AppColors.success,
-            ),
-          );
-        }
-      });
-    }
-  }
-
-  Widget _buildStatCard({
+  Widget _buildStatCard(
+    BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
     required Color color,
   }) {
+    final theme = Theme.of(context);
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -291,7 +285,7 @@ class _ProfilePageState extends State<ProfilePage> {
             label,
             style: TextStyle(
               fontSize: 14,
-              color: AppColors.textSecondary,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
             ),
           ),
         ],
@@ -299,32 +293,53 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
+  void _handleAdminAccess(BuildContext context) {
+    if (isAdmin) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AdminPanel(),
+        ),
+      );
+    } else {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => const AdminLoginPage(),
+        ),
+      ).then((result) {
+        if (result == true) {
+          setState(() {
+            isAdmin = true;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('✅ Mode Administrateur activé'),
+              backgroundColor: AppColors.success,
+            ),
+          );
+        }
+      });
+    }
+  }
+
   void _showLanguageDialog(BuildContext context) {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Choisir une langue'),
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
+          'Choisir une langue',
+          style: theme.textTheme.titleMedium,
+        ),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _buildLanguageTile(
-              context,
-              'Français',
-              '🇫🇷',
-              const Locale('fr'),
-            ),
-            _buildLanguageTile(
-              context,
-              'English',
-              '🇬🇧',
-              const Locale('en'),
-            ),
-            _buildLanguageTile(
-              context,
-              'Español',
-              '🇪🇸',
-              const Locale('es'),
-            ),
+            _buildLanguageTile(context, 'Français', '🇫🇷', const Locale('fr')),
+            _buildLanguageTile(context, 'English', '🇬🇧', const Locale('en')),
+            _buildLanguageTile(context, 'Español', '🇪🇸', const Locale('es')),
           ],
         ),
       ),
@@ -337,9 +352,16 @@ class _ProfilePageState extends State<ProfilePage> {
     String flag,
     Locale locale,
   ) {
+    final theme = Theme.of(context);
+
     return ListTile(
       leading: Text(flag),
-      title: Text(label),
+      title: Text(
+        label,
+        style: TextStyle(
+          color: theme.colorScheme.onSurface,
+        ),
+      ),
       trailing: context.locale.languageCode == locale.languageCode
           ? Icon(
               Icons.check_circle,
@@ -354,30 +376,34 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showAboutDialog(BuildContext context) {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('À propos de La Contrée'),
-        content: const Column(
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
+          'À propos de La Contrée',
+          style: theme.textTheme.titleMedium,
+        ),
+        content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               '🌍 La Contrée',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: theme.textTheme.titleLarge,
             ),
-            SizedBox(height: 8),
+            const SizedBox(height: 8),
             Text(
               'Votre guide de voyage au Sénégal.',
-              style: TextStyle(
-                color: AppColors.textSecondary,
-              ),
+              style: theme.textTheme.bodyMedium,
             ),
-            SizedBox(height: 8),
-            Text('Version 1.0.0'),
+            const SizedBox(height: 8),
+            Text(
+              'Version 1.0.0',
+              style: theme.textTheme.bodySmall,
+            ),
           ],
         ),
         actions: [
@@ -394,11 +420,20 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final theme = Theme.of(context);
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Déconnexion'),
-        content: const Text('Voulez-vous vraiment vous déconnecter ?'),
+        backgroundColor: theme.colorScheme.surface,
+        title: Text(
+          'Déconnexion',
+          style: theme.textTheme.titleMedium,
+        ),
+        content: Text(
+          'Voulez-vous vraiment vous déconnecter ?',
+          style: theme.textTheme.bodyMedium,
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),

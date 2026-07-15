@@ -35,6 +35,7 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final imageUrl = widget.activity['imageUrl'] ?? '';
 
     return Scaffold(
@@ -69,19 +70,15 @@ class _ActivityDetailPageState extends State<ActivityDetailPage> {
 
             Text(
               widget.activity['title'],
-              style: const TextStyle(
-                fontSize: 24,
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 12),
 
             Text(
               widget.activity['description'],
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
+              style: theme.textTheme.bodyMedium?.copyWith(
                 height: 1.6,
               ),
             ),

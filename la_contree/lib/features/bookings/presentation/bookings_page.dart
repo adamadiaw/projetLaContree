@@ -21,7 +21,16 @@ class _BookingsPageState extends State<BookingsPage> {
     _loadBookings();
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadBookings();
+  }
+
   Future<void> _loadBookings() async {
+    setState(() {
+      isLoading = true;
+    });
     final data = await db.getBookings();
     setState(() {
       bookings = data;
@@ -29,9 +38,51 @@ class _BookingsPageState extends State<BookingsPage> {
     });
   }
 
-  Future<void> _cancelBooking(int id) async {
-    await db.cancelBooking(id);
-    _loadBookings();
+  Future<void> _cancelBooking(int id, String name) async {
+    // ✅ Demander confirmation avant d'annuler
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Annuler la réservation'),
+        content: Text(
+          'Voulez-vous vraiment annuler la réservation de "$name" ?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.textSecondary,
+            ),
+            child: const Text('Non'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: TextButton.styleFrom(
+              foregroundColor: AppColors.error,
+            ),
+            child: const Text('Oui, annuler'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      // ✅ Annuler la réservation (supprimer de la base)
+      await db.cancelBooking(id);
+      
+      // ✅ Recharger la liste
+      await _loadBookings();
+      
+      // ✅ Message de confirmation
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Réservation annulée avec succès'),
+            backgroundColor: AppColors.success,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -40,6 +91,13 @@ class _BookingsPageState extends State<BookingsPage> {
       appBar: AppBar(
         title: const Text('Mes Réservations'),
         backgroundColor: AppColors.primary,
+        actions: [
+          IconButton(
+            onPressed: _loadBookings,
+            icon: const Icon(Icons.refresh),
+            tooltip: 'Rafraîchir',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
@@ -74,20 +132,135 @@ class _BookingsPageState extends State<BookingsPage> {
                       ],
                     ),
                   )
-                : ListView.builder(
-                    itemCount: bookings.length,
-                    itemBuilder: (context, index) {
-                      final booking = bookings[index];
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: BookingCard(
-                          booking: booking,
-                          onCancel: () => _cancelBooking(booking['id']),
-                        ),
-                      );
-                    },
+                : RefreshIndicator(
+                    onRefresh: _loadBookings,
+                    child: ListView.builder(
+                      itemCount: bookings.length,
+                      itemBuilder: (context, index) {
+                        final booking = bookings[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: BookingCard(
+                            booking: booking,
+                            onCancel: () => _cancelBooking(
+                              booking['id'],
+                              booking['itemName'],
+                            ),
+                            onTap: () {
+                              // ✅ On pourra ajouter le détail plus tard
+                              // Pour l'instant, on affiche juste les infos
+                              _showBookingDetail(context, booking);
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ),
       ),
+    );
+  }
+
+  // ✅ Afficher le détail d'une réservation
+  void _showBookingDetail(BuildContext context, Map<String, dynamic> booking) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      builder: (context) => Container(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  booking['type'] == 'hotel' ? Icons.hotel : Icons.tour,
+                  color: AppColors.primary,
+                  size: 30,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    booking['itemName'],
+                    style: const TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimary,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            _buildInfoRow(
+              icon: Icons.calendar_today,
+              label: 'Date',
+              value: booking['date'],
+            ),
+            const SizedBox(height: 8),
+            _buildInfoRow(
+              icon: Icons.book_online,
+              label: 'Type',
+              value: booking['type'] == 'hotel' ? 'Hôtel' : 'Visite guidée',
+            ),
+            const SizedBox(height: 8),
+            _buildInfoRow(
+              icon: Icons.check_circle,
+              label: 'Statut',
+              value: booking['status'],
+              valueColor: Colors.green,
+            ),
+            const SizedBox(height: 20),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () => Navigator.pop(context),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: const Text('Fermer'),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInfoRow({
+    required IconData icon,
+    required String label,
+    required String value,
+    Color? valueColor,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: AppColors.primary),
+        const SizedBox(width: 12),
+        Text(
+          '$label : ',
+          style: TextStyle(
+            fontSize: 14,
+            color: AppColors.textSecondary,
+          ),
+        ),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+            color: valueColor ?? AppColors.textPrimary,
+          ),
+        ),
+      ],
     );
   }
 }

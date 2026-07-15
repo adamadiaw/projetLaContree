@@ -44,6 +44,7 @@ class _ActivityCardState extends State<ActivityCard> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final imageUrl = widget.activity['imageUrl'] ?? '';
 
     return InkWell(
@@ -79,19 +80,14 @@ class _ActivityCardState extends State<ActivityCard> {
                   children: [
                     Text(
                       widget.activity['title'],
-                      style: const TextStyle(
+                      style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: AppColors.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       widget.activity['description'],
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: AppColors.textSecondary,
-                      ),
+                      style: theme.textTheme.bodySmall,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -99,7 +95,7 @@ class _ActivityCardState extends State<ActivityCard> {
                     Text(
                       'Voir Plus',
                       style: TextStyle(
-                        color: AppColors.primary,
+                        color: theme.colorScheme.primary,
                         fontWeight: FontWeight.w600,
                         fontSize: 12,
                       ),

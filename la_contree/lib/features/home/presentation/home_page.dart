@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../data/database/database.dart';
 import '../widgets/activity_card.dart';
-import '../../../main.dart'; // Import pour scaffoldKey
+import '../../../main.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -59,6 +59,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('La Contrée'),
@@ -79,33 +81,31 @@ class _HomePageState extends State<HomePage> {
           children: [
             Text(
               'bienvenue'.tr(),
-              style: const TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
-              ),
+              style: theme.textTheme.titleLarge,
             ),
             const SizedBox(height: 8),
             Text(
               'sous_titre'.tr(),
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-              ),
+              style: theme.textTheme.bodyLarge,
             ),
             const SizedBox(height: 16),
 
             TextField(
               controller: searchController,
+              style: theme.textTheme.bodyMedium,
               decoration: InputDecoration(
                 hintText: 'Rechercher une activité...',
-                prefixIcon: const Icon(Icons.search),
+                hintStyle: theme.textTheme.bodySmall,
+                prefixIcon: Icon(
+                  Icons.search,
+                  color: theme.colorScheme.onSurface,
+                ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 filled: true,
-                fillColor: AppColors.surface,
+                fillColor: theme.colorScheme.surface,
                 contentPadding: const EdgeInsets.symmetric(vertical: 12),
               ),
             ),
@@ -113,10 +113,8 @@ class _HomePageState extends State<HomePage> {
 
             Text(
               'Choses à faire',
-              style: const TextStyle(
-                fontSize: 20,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -132,23 +130,17 @@ class _HomePageState extends State<HomePage> {
                               Icon(
                                 Icons.search_off,
                                 size: 64,
-                                color: AppColors.textSecondary,
+                                color: theme.colorScheme.onSurface,
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'Aucun résultat',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: theme.textTheme.titleMedium,
                               ),
                               const SizedBox(height: 8),
                               Text(
                                 'Essayez un autre mot-clé',
-                                style: TextStyle(
-                                  fontSize: 14,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: theme.textTheme.bodyMedium,
                               ),
                             ],
                           ),

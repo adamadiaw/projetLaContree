@@ -19,14 +19,25 @@ dependencies:
   path: ^1.9.1
   intl: ^0.20.2
   image_picker: ^1.2.1
+  shared_preferences: ^2.5.3
+  flutter_riverpod: ^3.3.2
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
   assets:
     - assets/translations/
     - assets/images/
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "assets/images/logos.png"
+  adaptive_icon_background: "#0B5A8C"  # Bleu Océan (palette)
+  adaptive_icon_foreground: "assets/images/logos.png"
+  remove_alpha_ios: true

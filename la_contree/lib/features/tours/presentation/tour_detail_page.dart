@@ -28,14 +28,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              surface: AppColors.surface,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
+          data: Theme.of(context),
           child: child!,
         );
       },
@@ -83,6 +76,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final imageUrl = widget.tour['imageUrl'] ?? '';
 
     return Scaffold(
@@ -108,10 +102,8 @@ class _TourDetailPageState extends State<TourDetailPage> {
 
             Text(
               widget.tour['title'],
-              style: const TextStyle(
-                fontSize: 24,
+              style: theme.textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -137,19 +129,14 @@ class _TourDetailPageState extends State<TourDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Guide',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: theme.textTheme.bodySmall,
                               ),
                               Text(
                                 widget.tour['guide'],
-                                style: TextStyle(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -179,19 +166,14 @@ class _TourDetailPageState extends State<TourDetailPage> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text(
+                              Text(
                                 'Durée',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.textSecondary,
-                                ),
+                                style: theme.textTheme.bodySmall,
                               ),
                               Text(
                                 widget.tour['duration'],
-                                style: TextStyle(
+                                style: theme.textTheme.titleMedium?.copyWith(
                                   fontWeight: FontWeight.w600,
-                                  fontSize: 14,
-                                  color: AppColors.textPrimary,
                                 ),
                               ),
                             ],
@@ -218,17 +200,13 @@ class _TourDetailPageState extends State<TourDetailPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
+                  Text(
                     'Prix par personne',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.textPrimary,
-                    ),
+                    style: theme.textTheme.titleMedium,
                   ),
                   Row(
                     children: [
-                      Icon(
+                      const Icon(
                         Icons.euro,
                         color: AppColors.primary,
                         size: 20,
@@ -254,38 +232,30 @@ class _TourDetailPageState extends State<TourDetailPage> {
 
             Text(
               'Description',
-              style: const TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
 
             Text(
               widget.tour['description'],
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-                height: 1.6,
-              ),
+              style: theme.textTheme.bodyMedium,
             ),
 
             const SizedBox(height: 30),
 
             Text(
               'Sélectionnez une date',
-              style: const TextStyle(
-                fontSize: 16,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: AppColors.primary.withValues(alpha: 0.2),
@@ -303,12 +273,9 @@ class _TourDetailPageState extends State<TourDetailPage> {
                       _selectedDate == null
                           ? 'Choisir une date'
                           : DateFormat('dd/MM/yyyy').format(_selectedDate!),
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: _selectedDate == null
-                            ? AppColors.textSecondary
-                            : AppColors.textPrimary,
-                      ),
+                      style: _selectedDate == null
+                          ? theme.textTheme.bodyMedium
+                          : theme.textTheme.titleMedium,
                     ),
                   ),
                   TextButton(

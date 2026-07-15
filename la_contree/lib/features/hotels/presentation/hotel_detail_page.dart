@@ -28,14 +28,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       lastDate: DateTime.now().add(const Duration(days: 365)),
       builder: (context, child) {
         return Theme(
-          data: Theme.of(context).copyWith(
-            colorScheme: const ColorScheme.light(
-              primary: AppColors.primary,
-              onPrimary: Colors.white,
-              surface: AppColors.surface,
-              onSurface: AppColors.textPrimary,
-            ),
-          ),
+          data: Theme.of(context),
           child: child!,
         );
       },
@@ -83,6 +76,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     final imageUrl = widget.hotel['imageUrl'] ?? '';
 
     return Scaffold(
@@ -112,10 +106,8 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                 Expanded(
                   child: Text(
                     widget.hotel['name'],
-                    style: const TextStyle(
-                      fontSize: 24,
+                    style: theme.textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
                     ),
                   ),
                 ),
@@ -138,10 +130,8 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                       const SizedBox(width: 4),
                       Text(
                         widget.hotel['rating'].toString(),
-                        style: const TextStyle(
+                        style: theme.textTheme.bodyMedium?.copyWith(
                           fontWeight: FontWeight.bold,
-                          fontSize: 16,
-                          color: AppColors.textPrimary,
                         ),
                       ),
                     ],
@@ -153,7 +143,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
             Row(
               children: [
-                Icon(
+                const Icon(
                   Icons.euro,
                   color: AppColors.primary,
                   size: 20,
@@ -175,36 +165,28 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
 
             Text(
               'Description',
-              style: const TextStyle(
-                fontSize: 18,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
               widget.hotel['description'],
-              style: TextStyle(
-                fontSize: 16,
-                color: AppColors.textSecondary,
-                height: 1.6,
-              ),
+              style: theme.textTheme.bodyMedium,
             ),
             const SizedBox(height: 30),
 
             Text(
               'Sélectionnez une date',
-              style: const TextStyle(
-                fontSize: 16,
+              style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
-                color: AppColors.textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: AppColors.background,
+                color: theme.colorScheme.surface,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
                   color: AppColors.primary.withValues(alpha: 0.2),
@@ -222,12 +204,9 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
                       _selectedDate == null
                           ? 'Choisir une date'
                           : DateFormat('dd/MM/yyyy').format(_selectedDate!),
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: _selectedDate == null
-                            ? AppColors.textSecondary
-                            : AppColors.textPrimary,
-                      ),
+                      style: _selectedDate == null
+                          ? theme.textTheme.bodyMedium
+                          : theme.textTheme.titleMedium,
                     ),
                   ),
                   TextButton(
