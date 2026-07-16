@@ -62,19 +62,19 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
       date: dateFormatted,
     );
 
-    // ✅ Notification de confirmation
+    // Notification de confirmation
     final notificationService = NotificationService();
     await notificationService.showNotification(
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title: '✅ Réservation confirmée',
+      title: 'Réservation confirmée',
       body: '${widget.hotel['name']} réservé pour le $dateFormatted',
     );
 
-    // ✅ Planifier un rappel 1 jour avant
+    // Planifier un rappel 1 jour avant
     final reminderId = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 1;
     await notificationService.scheduleReminder(
       id: reminderId,
-      title: '🔔 Rappel de réservation',
+      title: 'Rappel de réservation',
       body: 'Votre réservation à ${widget.hotel['name']} est demain !',
       reservationDate: _selectedDate!,
     );
@@ -83,7 +83,7 @@ class _HotelDetailPageState extends State<HotelDetailPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '✅ ${widget.hotel['name']} réservé pour le $dateFormatted',
+          '${widget.hotel['name']} réservé pour le $dateFormatted',
         ),
         backgroundColor: AppColors.success,
       ),

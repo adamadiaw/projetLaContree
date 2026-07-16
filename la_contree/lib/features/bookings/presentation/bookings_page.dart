@@ -76,7 +76,7 @@ class _BookingsPageState extends State<BookingsPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('✅ Réservation annulée avec succès'),
+            content: Text('Réservation annulée avec succès'),
             backgroundColor: AppColors.success,
           ),
         );
@@ -231,7 +231,7 @@ class _BookingsPageState extends State<BookingsPage> {
     );
   }
 
-  // ✅ Méthode ajoutée pour afficher chaque ligne d'information
+  // Méthode pour afficher chaque ligne d'information
   Widget _buildInfoRow({
     required IconData icon,
     required String label,

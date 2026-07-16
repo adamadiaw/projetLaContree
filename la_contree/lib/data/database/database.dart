@@ -21,7 +21,7 @@ class AppDatabase {
     final dbFolder = await getApplicationDocumentsDirectory();
     final path = p.join(dbFolder.path, 'la_contree.db');
 
-    // ✅ FORCER la suppression de l'ancienne base
+    // FORCER la suppression de l'ancienne base
     final file = File(path);
     if (await file.exists()) {
       await file.delete();
@@ -182,7 +182,7 @@ class AppDatabase {
       'longitude': -17.2333,
     });
 
-    print('✅ Base de données créée avec succès');
+    print('Base de données créée avec succès');
   }
 
   // Activities

@@ -54,7 +54,7 @@ class _AddActivityPageState extends State<AddActivityPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('✅ Activité ajoutée avec succès'),
+        content: Text('Activité ajoutée avec succès'),
         backgroundColor: AppColors.success,
       ),
     );
@@ -116,13 +116,13 @@ class _AddActivityPageState extends State<AddActivityPage> {
                   hintText: 'URL de l\'image ou sélectionnez depuis la galerie',
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  '📱 Appuyez sur le bouton 📷 pour choisir une image dans votre galerie',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                // Text(
+                //   'Appuyez sur le bouton pour choisir une image dans votre galerie',
+                //   style: TextStyle(
+                //     fontSize: 12,
+                //     color: AppColors.textSecondary,
+                //   ),
+                // ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,

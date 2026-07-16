@@ -65,7 +65,6 @@ class HotelCard extends StatelessWidget {
                           style: theme.textTheme.bodyMedium,
                         ),
                         const SizedBox(width: 12),
-                        // ✅ Prix amélioré avec style
                         Container(
                           padding: const EdgeInsets.symmetric(
                             horizontal: 10,

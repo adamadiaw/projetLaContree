@@ -78,7 +78,6 @@ class TourCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: 6),
-                    // ✅ Prix amélioré avec style
                     Container(
                       padding: const EdgeInsets.symmetric(
                         horizontal: 10,

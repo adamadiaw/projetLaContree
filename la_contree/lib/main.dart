@@ -18,9 +18,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await EasyLocalization.ensureInitialized();
 
-  // Initialiser les notifications
-  await NotificationService().init();
-
   runApp(
     EasyLocalization(
       supportedLocales: const [Locale('fr'), Locale('en'), Locale('es')],
@@ -40,18 +37,27 @@ class LaContreeApp extends StatefulWidget {
 
 class _LaContreeAppState extends State<LaContreeApp> {
   ThemeMode _themeMode = ThemeMode.light;
+  bool _isInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _loadTheme();
+    _initializeApp();
   }
 
-  Future<void> _loadTheme() async {
+  Future<void> _initializeApp() async {
+    // Charger le thème
     final prefs = await SharedPreferences.getInstance();
     final isDark = prefs.getBool('isDarkMode') ?? false;
     setState(() {
       _themeMode = isDark ? ThemeMode.dark : ThemeMode.light;
+    });
+
+    // Initialiser les notifications en arrière-plan
+    await NotificationService().init();
+
+    setState(() {
+      _isInitialized = true;
     });
   }
 
@@ -66,11 +72,22 @@ class _LaContreeAppState extends State<LaContreeApp> {
 
   @override
   Widget build(BuildContext context) {
+    //Écran de chargement
+    if (!_isInitialized) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: _themeMode,
+        home: const LoadingScreen(),
+      );
+    }
+
     return MaterialApp(
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
       locale: context.locale,
-      title: 'La Contrée',
+      title: 'LaContree',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: _themeMode,
@@ -78,6 +95,112 @@ class _LaContreeAppState extends State<LaContreeApp> {
       home: MainNavigation(
         onToggleTheme: toggleTheme,
         isDarkMode: _themeMode == ThemeMode.dark,
+      ),
+    );
+  }
+}
+
+// Écran de chargement
+class LoadingScreen extends StatelessWidget {
+  const LoadingScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    //final theme = Theme.of(context);
+
+    return Scaffold(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          gradient: AppColors.primaryGradient,
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            // Logo avec animation de pulsation
+            TweenAnimationBuilder<double>(
+              tween: Tween<double>(begin: 1.0, end: 1.1),
+              duration: const Duration(milliseconds: 800),
+              builder: (context, value, child) {
+                return Transform.scale(
+                  scale: value,
+                  child: Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.2),
+                          blurRadius: 20,
+                          offset: const Offset(0, 10),
+                        ),
+                      ],
+                    ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Image.asset(
+                        'assets/images/logos.png',
+                        width: 100,
+                        height: 100,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 100,
+                            height: 100,
+                            color: Colors.white,
+                            child: const Icon(
+                              Icons.explore,
+                              size: 60,
+                              color: AppColors.primary,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 40),
+
+            // Nom de l'app
+            // Text(
+            //   'La Contrée',
+            //   style: TextStyle(
+            //     fontSize: 28,
+            //     fontWeight: FontWeight.bold,
+            //     color: Colors.white,
+            //     letterSpacing: 2,
+            //   ),
+            // ),
+            const SizedBox(height: 8),
+            Text(
+              'Votre guide au Sénégal',
+              style: TextStyle(
+                fontSize: 16,
+                color: Colors.white.withValues(alpha: 0.8),
+                letterSpacing: 1,
+              ),
+            ),
+            const SizedBox(height: 40),
+
+            // Chargement
+            const CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              strokeWidth: 3,
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Chargement...',
+              style: TextStyle(
+                color: Colors.white.withValues(alpha: 0.7),
+                fontSize: 14,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -235,15 +358,15 @@ class AppDrawer extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'La Contrée',
-                        style: TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          letterSpacing: 1.2,
-                        ),
-                      ),
+                      // Text(
+                      //   'La Contrée',
+                      //   style: TextStyle(
+                      //     fontSize: 22,
+                      //     fontWeight: FontWeight.bold,
+                      //     color: Colors.white,
+                      //     letterSpacing: 1.2,
+                      //   ),
+                      // ),
                       Text(
                         'Votre guide au Sénégal',
                         style: TextStyle(

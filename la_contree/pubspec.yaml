@@ -26,6 +26,7 @@ dependencies:
   latlong2: ^0.10.1
   flutter_local_notifications: ^20.1.0
   timezone: ^0.10.1
+  cached_network_image: ^3.4.1
 
 dev_dependencies:
   flutter_test:

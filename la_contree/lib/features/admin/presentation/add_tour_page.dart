@@ -62,7 +62,7 @@ class _AddTourPageState extends State<AddTourPage> {
 
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text('✅ Visite ajoutée avec succès'),
+        content: Text('Visite ajoutée avec succès'),
         backgroundColor: AppColors.success,
       ),
     );
@@ -187,13 +187,13 @@ class _AddTourPageState extends State<AddTourPage> {
                   hintText: 'URL de l\'image ou sélectionnez depuis la galerie',
                 ),
                 const SizedBox(height: 8),
-                Text(
-                  '📱 Appuyez sur le bouton 📷 pour choisir une image dans votre galerie',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                // Text(
+                //   'Appuyez sur le bouton pour choisir une image dans votre galerie',
+                //   style: TextStyle(
+                //     fontSize: 12,
+                //     color: AppColors.textSecondary,
+                //   ),
+                // ),
                 const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,

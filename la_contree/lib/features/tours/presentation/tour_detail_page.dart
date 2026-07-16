@@ -62,20 +62,20 @@ class _TourDetailPageState extends State<TourDetailPage> {
       date: dateFormatted,
     );
 
-    // ✅ Notification de confirmation
+    // Notification de confirmation
     final notificationService = NotificationService();
     await notificationService.showNotification(
       id: DateTime.now().millisecondsSinceEpoch ~/ 1000,
-      title: '✅ Réservation confirmée',
+      title: 'Réservation confirmée',
       body: '${widget.tour['title']} réservé pour le $dateFormatted',
     );
 
-    // ✅ Planifier un rappel 1 jour avant
+    // Planifier un rappel 1 jour avant
     final reminderId = (DateTime.now().millisecondsSinceEpoch ~/ 1000) + 1;
     await notificationService.scheduleReminder(
       id: reminderId,
-      title: '🔔 Rappel de réservation',
-      body: 'Votre visite "${widget.tour['title']}" est demain !',
+      title: 'Rappel de réservation',
+      body: 'Votre visite "${widget.tour['title']}" a lieu demain !',
       reservationDate: _selectedDate!,
     );
 
@@ -83,7 +83,7 @@ class _TourDetailPageState extends State<TourDetailPage> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-          '✅ ${widget.tour['title']} réservé pour le $dateFormatted',
+          '${widget.tour['title']} réservé pour le $dateFormatted',
         ),
         backgroundColor: AppColors.success,
       ),
