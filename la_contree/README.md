@@ -62,5 +62,4 @@ lib/
 │   └── tours/          # Visites guidées
 └── main.dart           # Point d'entrée
 
-# Adama Diaw
-Projet réalisé dans le cadre du développement d'une application de tourisme.
+<div align="right"><code>Adama Diaw</code></div>

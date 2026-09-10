@@ -1,4 +1,5 @@
-# la_contree  - Guide de voyage au Sénégal
+# LaContree  - Guide de voyage au Sénégal
+
 Application mobile de tourisme permettant de découvrir le Sénégal, réserver des hôtels et des visites guidées.
 
 
@@ -26,14 +27,7 @@ Application mobile de tourisme permettant de découvrir le Sénégal, réserver 
 | SharedPreferences | Sauvegarde des préférences |
 
 
-## Installation
-
-### Prérequis
-- Flutter 3.x
-- Android Studio / VS Code
-- Téléphone Android ou émulateur
-
-### Cloner et lancer
+### Lancement
 
 ```bash
 git clone repository
@@ -42,25 +36,26 @@ flutter pub get
 flutter run
 ```
 
-## Structure
-lib/
-├── core/               # Cœur de l'app
-│   ├── services/       # Services (notifications, etc.)
-│   ├── theme/          # Thème et couleurs
-│   └── utils/          # Utilitaires (images, etc.)
-├── data/               # Données
-│   └── database/       # SQLite
-├── features/           # Fonctionnalités
-│   ├── activity/       # Activités
-│   ├── admin/          # Administration
-│   ├── bookings/       # Réservations
-│   ├── favorites/      # Favoris
-│   ├── home/           # Accueil
-│   ├── hotels/         # Hôtels
-│   ├── map/            # Carte
-│   ├── profile/        # Profil
-│   └── tours/          # Visites guidées
-└── main.dart           # Point d'entrée
+## Structure du projet
 
-# Adama Diaw
-Projet réalisé dans le cadre du développement d'une application de tourisme.
+- **`lib/`** : Code source de l'application Flutter
+  - **`core/`** : Éléments partagés et configuration globale du projet
+    - **`services/`** : Services transversaux (gestion des notifications, etc.)
+    - **`theme/`** : Définition des thèmes graphiques et palettes de couleurs
+    - **`utils/`** : Fonctions utilitaires globales (gestion des images, etc.)
+  - **`data/`** : Couche de gestion des données
+    - **`database/`** : Configuration et gestion de la base de données locale SQLite
+  - **`features/`** : Modules et fonctionnalités de l'application (approche Feature-First)
+    - **`activity/`** : Gestion et affichage des activités
+    - **`admin/`** : Panneau et outils d'administration
+    - **`bookings/`** : Système de gestion des réservations
+    - **`favorites/`** : Gestion des éléments favoris
+    - **`home/`** : Écran d'accueil principal
+    - **`hotels/`** : Recherche et détails des hôtels
+    - **`map/`** : Fonctionnalités de cartographie et de géolocalisation
+    - **`profile/`** : Gestion du profil utilisateur et des paramètres
+    - **`tours/`** : Gestion des visites guidées
+  - **`main.dart`** : Point d'entrée principal de l'application
+
+
+<div align="right"><code>Adama Diaw</code></div>
